@@ -11,7 +11,107 @@
 	<script src="./js/jquery.mobile-1.4.5.js"></script>
 </head>
 <body>
+<div data-role="page" id="depart">
+<div class="header" data-role="header" data-theme="b">
+<a href="index.html" rel="external" data-icon="home" data-iconpos="notext" data-direction="reverse" class="ul-btn-left"></a>
+<h1 id="logo">출국장 현황</h1>
+</div>
+<div data-role="content" class="content">
+	<h4></h4>
+	<ul class="depart-su" date-role="listview"></ul>
+	
+</div>
+</div>
+	<script>
+		$(function() {
+		var key="idkdDZdpSTcvss2ws2casw8%2BAIsZ%2FHbLYQ12%2BSejyj%2Fl%2Bus6HTH5YDoiAEY%2BLowm7r1ezhAmznry1wyW8R%2BhlQ%3D%3D";
+        var url = 'http://openapi.airport.kr/openapi/service/StatusOfDepartures/getDeparturesCongestion'; /*URL*/
+        url += '?' + encodeURIComponent('ServiceKey') + '='+key; /*Service Key*/
+        url += '&' + encodeURIComponent('terno') + '=' + encodeURIComponent('1'); 
 
-	<script></script>
+
+        function bakImg(n) {
+        	var bak; var bakImg ="";
+        	if ( n < 100 ) { return ""; }
+        	bak = parseInt( n / 100 );
+        	for (let i = 0; i < bak; i++) {
+        		bakImg += "<Img src='./Img/people-bak.png' width='40' height='40'>"
+        	}
+        	return bakImg;
+        }
+
+        function sipImg(n) {
+        	var sip; var sipImg = "";
+        	if( n>=100 ) {
+        		var bak = parseInt(n / 100);
+        		n -= (bak * 100);
+        	}
+        	if ( n < 10 ) { return ""; }
+        	sip = parseInt( n / 10 );
+        	for (let i = 0; i < sip; i++) {
+        		sipImg += "<Img src='./Img/people-sip.png' width='30' height='30'>"
+        	}
+        	return sipImg;
+        }
+
+
+        function info(data) {
+        	console.log(data);
+
+        	var res = $(data).find("item");
+        	var gateinfo1 = $(res).find("gateinfo1").text(); 
+        	var gateinfo2 = $(res).find("gateinfo2").text();
+        	var gateinfo3 = $(res).find("gateinfo3").text();
+        	var gateinfo4 = $(res).find("gateinfo4").text();
+
+        	console.log(gateinfo1);
+        	console.log(gateinfo2);
+        	console.log(gateinfo3);
+        	console.log(gateinfo4);
+
+        	var list =
+        	"<li>" + bakImg(gateinfo1) + sipImg(gateinfo1) + gateinfo1 + "명" + "</li>" +
+        	"<li>" + bakImg(gateinfo2) + sipImg(gateinfo1) + gateinfo2 + "명" + "</li>" +
+        	"<li>" + bakImg(gateinfo3) + sipImg(gateinfo1) + gateinfo3 + "명" + "</li>" +
+        	"<li>" + bakImg(gateinfo4) + sipImg(gateinfo1) + gateinfo4 + "명" + "</li>";
+
+        	$(".content ul").html(list);
+        }
+
+        function time(data) {
+        	console.log(data);
+
+        	var res = $(data).find("item");
+        	var cgtdt = $(res).find("cgtdt").text(); // cgtdt 날짜를 불러옴
+        	var cgthm = $(res).find("cgthm").text(); // cgthm 시간을 불러옴 
+
+        	var year = cgtdt.substring(0, 4); // 날짜 20140111에서 2부터 4까지
+        	var mouth = cgtdt.substring(4, 6); // 날짜 20140111에서 01부터 11까지
+        	var day = cgtdt.substring(6, 8);
+        	var hour = cgthm.substring(0, 2);
+        	var minute = cgthm.substring(2, 4);
+        	var time = year + "년 " + mouth + "월 " + day + "일 " + hour + "시 " + minute + "분 ";
+
+        	console.log(year);
+      		console.log(time);
+      		
+      		$(".content h4").text(time);
+      		info(data);
+        }
+
+        function request() {
+        	$.ajax({
+        		url : url,
+        		success : function(data) {
+        		time(data);
+        		}
+        	}) // ajax
+        } // request()
+        request();
+   		
+
+   		}); // $(function) 
+
+	</script>
 </body>
 </html>
